@@ -21,7 +21,7 @@ services:
       context: .
       dockerfile: api.dockerfile
       args:
-        uid: ${UID}
+        uid: 1000
     environment:
       - DB_HOST=${DB_HOST}
       - DB_PORT=${DB_PORT}
@@ -30,8 +30,6 @@ services:
       - DB_PASSWORD=${DB_PASSWORD}
     volumes:
       - .:/var/www
-    ports:
-      - "${API_SERVER_PORT}:9000"
     expose:
       - 9000
     links:

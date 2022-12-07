@@ -1,7 +1,7 @@
-FROM php:8.1-npm
+FROM php:8.1-fpm-alpine
 
 RUN echo "Building API container ......."
-RUN apt-get update && apt-get install -yqq  --no-install-recommends \
+RUN apk update && apk add -yqq --no-cache --no-install-recommends \
     git zip unzip curl wget vim libzip-dev \
     build-essential software-properties-common \
     libmcrypt-dev libpq-dev libpng-dev libxml2-dev \
@@ -9,10 +9,14 @@ RUN apt-get update && apt-get install -yqq  --no-install-recommends \
     libfreetype6-dev libjpeg62-turbo-dev libpng-dev
 
 RUN echo "Installing PHP extensions .................."
-RUN pecl install mcrypt-1.0.2
-RUN docker-php-ext-install -j$(nproc) gd zip bcmath pdo pdo_mysql pdo_pgsql mbstring \
+RUN pecl install zip && docker-php-ext-enable zip \
+    && pecl install mcrypt-1.0.2 \
+    && pecl install igbinary && docker-php-ext-enable igbinary \
+    && yes | pecl install redis && docker-php-ext-enable redis
+
+RUN docker-php-ext-install -j$(nproc) gd zip bcmath pdo pdo_mysql mysqli mbstring pcntl \
     && docker-php-ext-enable mcrypt pdo_mysql pdo gd \
-    && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/
+    && docker-php-ext-configure gd --with-freetype --with-jpeg
 RUN apt-get clean && apt-get --purge autoremove -y
 
 RUN echo "Deploying the API .........."
