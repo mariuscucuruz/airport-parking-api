@@ -2,10 +2,12 @@
 
 namespace Tests\Feature;
 
-use App\Models\Availability;
+use App\Models\Booking;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use InvalidArgumentException;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Exception\MethodNotAllowedException;
 use Tests\TestCase;
 
 class AcceptanceTestsTest extends TestCase
@@ -37,6 +39,7 @@ class AcceptanceTestsTest extends TestCase
         $response = $this->get(self::API_ENDPOINT);
 
         $response->assertStatus(Response::HTTP_OK);
+        $response->assertSee('ok');
     }
 
     public function test_api_rejects_patch_requests()
@@ -51,7 +54,7 @@ class AcceptanceTestsTest extends TestCase
         $dateEnd = $this->faker()->dateTime('next week');
         $url = self::API_ENDPOINT . "?dateEnd={$dateEnd->format(self::DATE_FORMAT)}";
 
-//        $this->expectException();
+        $this->expectException(InvalidArgumentException::class);
         $response = $this->get($url);
 
         $response->assertStatus(Response::HTTP_OK);
@@ -62,7 +65,7 @@ class AcceptanceTestsTest extends TestCase
         $dateStart = $this->faker()->dateTime('tomorrow');
         $url = self::API_ENDPOINT . "?dateStart={$dateStart->format(self::DATE_FORMAT)}";
 
-        $this->expectException();
+        $this->expectException(InvalidArgumentException::class);
         $response = $this->get($url);
 
         $response->assertStatus(Response::HTTP_BAD_REQUEST);
@@ -74,7 +77,7 @@ class AcceptanceTestsTest extends TestCase
         $dateEnd = $this->faker()->dateTime('last week');
         $url = self::API_ENDPOINT . "?dateStart={$dateStart->format(self::DATE_FORMAT)}&dateEnd={$dateEnd->format(self::DATE_FORMAT)}";
 
-        $this->expectException();
+        $this->expectException(InvalidArgumentException::class);
         $response = $this->get($url);
 
         $response->assertStatus(Response::HTTP_BAD_REQUEST);
@@ -99,7 +102,7 @@ class AcceptanceTestsTest extends TestCase
         $dateEnd = $this->faker()->dateTime('next week');
 
         /** @var \Illuminate\Database\Eloquent\Model $booking */
-        $booking = Availability::factory([
+        $booking = Booking::factory([
             'booked' => true,
             'dateStart' => $dateStart->format(self::DATE_FORMAT),
             'dateEnd' => $dateEnd->format(self::DATE_FORMAT),
