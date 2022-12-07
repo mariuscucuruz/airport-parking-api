@@ -26,8 +26,6 @@ class AvailabilityController extends Controller
      */
     public function check(Request $request): JsonResponse
     {
-//        dd($request->dump(),
-//            $request->query('dateStart'), $request->query('dateEnd'));
         return response()->json(['success' => true, 'req' => $request->all()]);
     }
 

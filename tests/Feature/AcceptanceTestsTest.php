@@ -62,7 +62,6 @@ class AcceptanceTestsTest extends TestCase
         // given
         $dateEnd = $this->faker()->dateTimeBetween('+7 days', '+1 week');
         $url = self::API_ENDPOINT . "/?dateEnd={$dateEnd->format(self::DATE_FORMAT)}";
-        dd($url);
 
         // when
         $this->expectException(InvalidArgumentException::class);
@@ -116,8 +115,8 @@ class AcceptanceTestsTest extends TestCase
 
         // then
         $response->assertStatus(Response::HTTP_OK);
-        static::assertEquals($response['dateStart'], $dateStart->format(self::DATE_FORMAT)));
-        static::assertEquals($response['dateEnd'], $dateEnd->format(self::DATE_FORMAT)));
+        static::assertEquals($response['dateStart'], $dateStart->format(self::DATE_FORMAT));
+        static::assertEquals($response['dateEnd'], $dateEnd->format(self::DATE_FORMAT));
     }
 
     public function test_correctly_identify_booked_slots()
