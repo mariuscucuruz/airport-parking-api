@@ -1,0 +1,4 @@
+.dockerignore
+vendor
+public/storage
+#node_modules
