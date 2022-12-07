@@ -1,7 +1,7 @@
 <?php
 
-use App\Http\Controllers\AvailabilityController;
 use Illuminate\Support\Facades\Route;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -14,5 +14,5 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return \Illuminate\Support\Facades\App::version();
+    return view('welcome');
 });
