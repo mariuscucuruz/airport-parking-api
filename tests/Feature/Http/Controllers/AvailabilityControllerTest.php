@@ -8,6 +8,8 @@ use Tests\TestCase;
 
 class AvailabilityControllerTest extends TestCase
 {
+    use RefreshDatabase, WithFaker;
+
     /**
      * A basic feature test example.
      *
