@@ -24,9 +24,11 @@ class AvailabilityController extends Controller
      * @param  \App\Models\Booking  $booking
      * @return \Illuminate\Http\Response
      */
-    public function check(Booking $booking): JsonResponse
+    public function check(Request $request): JsonResponse
     {
-        //
+//        dd($request->dump(),
+//            $request->query('dateStart'), $request->query('dateEnd'));
+        return response()->json(['success' => true, 'req' => $request->all()]);
     }
 
     /**
@@ -37,7 +39,7 @@ class AvailabilityController extends Controller
      */
     public function book(Request $request): JsonResponse
     {
-        //
+        return response()->json(['success' => true]);
     }
 
     /**
@@ -49,7 +51,7 @@ class AvailabilityController extends Controller
      */
     public function update(Request $request, Booking $booking): JsonResponse
     {
-        //
+        return response()->json(['success' => true]);
     }
 
     /**
@@ -60,6 +62,6 @@ class AvailabilityController extends Controller
      */
     public function delete(Booking $booking): JsonResponse
     {
-        //
+        return response()->json(['success' => true]);
     }
 }
