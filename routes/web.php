@@ -14,5 +14,14 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return \Illuminate\Support\Facades\App::version();
 });
+
+Route::group(['prefix' => 'check-availability'], function () {
+    Route::get('/?{dateStart}&{dateEnd}', 'AvailabilityController@check');
+    Route::get('/', 'AvailabilityController@index');
+    Route::post('/', 'AvailabilityController@book');
+    Route::put('/', 'AvailabilityController@update');
+    Route::delete('/', 'AvailabilityController@delete');
+});
+
