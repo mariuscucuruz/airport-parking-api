@@ -1,0 +1,47 @@
+version: '3.7'
+
+services:
+  db:
+    image: mysql/mysql-server:5.7
+    command: --default-authentication-plugin=mysql_native_password
+    volumes:
+      - ./mysql:/docker-entrypoint-initdb.d
+    environment:
+      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
+      - MYSQL_DATABASE=${DB_DATABASE}
+      - MYSQL_USER=${DB_USERNAME}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+    expose:
+      - ${DB_PORT}
+    networks:
+      - backend
+
+  api:
+    build:
+      context: .
+      dockerfile: api.dockerfile
+      args:
+        uid: 1000
+    environment:
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_DATABASE=${DB_DATABASE}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+    volumes:
+      - .:/var/www
+    expose:
+      - 9000
+    links:
+      - db
+    depends_on:
+      - db
+    networks:
+      - frontend
+      - backend
+
+networks:
+  frontend:
+    driver: bridge
+  backend:
+    driver: bridge
