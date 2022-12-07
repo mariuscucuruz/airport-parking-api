@@ -36,70 +36,95 @@ class AcceptanceTestsTest extends TestCase
 
     public function test_api_accepts_get_requests()
     {
+        // given
+
+        // when
         $response = $this->get(self::API_ENDPOINT);
 
+        // then
         $response->assertStatus(Response::HTTP_OK);
         $response->assertSee('ok');
     }
 
     public function test_api_rejects_patch_requests()
     {
+        // given
+
+        // when
         $response = $this->patch(self::API_ENDPOINT);
 
+        // then
         $response->assertStatus(Response::HTTP_METHOD_NOT_ALLOWED);
     }
 
     public function test_reject_requests_without_start_date()
     {
-        $dateEnd = $this->faker()->dateTime('next week');
-        $url = self::API_ENDPOINT . "?dateEnd={$dateEnd->format(self::DATE_FORMAT)}";
+        // given
+        $dateEnd = $this->faker()->dateTimeBetween('+7 days', '+1 week');
+        $url = self::API_ENDPOINT . "/?dateEnd={$dateEnd->format(self::DATE_FORMAT)}";
+        dd($url);
 
+        // when
         $this->expectException(InvalidArgumentException::class);
         $response = $this->get($url);
+        dd($url, $response->dd());
 
-        $response->assertStatus(Response::HTTP_OK);
+        // then
+        $response->assertStatus(Response::HTTP_BAD_REQUEST);
     }
 
     public function test_reject_requests_without_end_date()
     {
-        $dateStart = $this->faker()->dateTime('tomorrow');
+        // given
+        $dateStart = $this->faker()->dateTime('+2 days');
         $url = self::API_ENDPOINT . "?dateStart={$dateStart->format(self::DATE_FORMAT)}";
 
+        // when
         $this->expectException(InvalidArgumentException::class);
         $response = $this->get($url);
 
+        // then
         $response->assertStatus(Response::HTTP_BAD_REQUEST);
     }
 
     public function test_reject_dates_in_the_past()
     {
-        $dateStart = $this->faker()->dateTime('last month');
-        $dateEnd = $this->faker()->dateTime('last week');
+        // given
+        $dateStart = $this->faker()->dateTimeBetween('-20days', '-10 days');
+        $dateEnd = $this->faker()->dateTimeBetween('-5days', '+0 days');
         $url = self::API_ENDPOINT . "?dateStart={$dateStart->format(self::DATE_FORMAT)}&dateEnd={$dateEnd->format(self::DATE_FORMAT)}";
 
+        // when
         $this->expectException(InvalidArgumentException::class);
         $response = $this->get($url);
 
+        // then
         $response->assertStatus(Response::HTTP_BAD_REQUEST);
     }
 
     public function test_handles_correct_requests()
     {
-        $dateStart = $this->faker()->dateTime('tomorrow');
-        $dateEnd = $this->faker()->dateTime('next week');
+        // given
+        $dateStart = $this->faker()->dateTimeBetween('+5 days', '+10 days');
+        $dateEnd = $this->faker()->dateTimeBetween('+10 days', '+20 days');
         $url = self::API_ENDPOINT . "?dateStart={$dateStart->format(self::DATE_FORMAT)}&dateEnd={$dateEnd->format(self::DATE_FORMAT)}";
 
+        // when
         $response = $this->post($url, [
             'email' => $this->faker()->safeEmail()
         ]);
 
+        // then
         $response->assertStatus(Response::HTTP_OK);
+        static::assertEquals($response['dateStart'], $dateStart->format(self::DATE_FORMAT)));
+        static::assertEquals($response['dateEnd'], $dateEnd->format(self::DATE_FORMAT)));
     }
 
     public function test_correctly_identify_booked_slots()
     {
-        $dateStart = $this->faker()->dateTime('tomorrow');
-        $dateEnd = $this->faker()->dateTime('next week');
+        // given
+        $dateStart = $this->faker()->dateTimeBetween('+5 days', '+10 days');
+        $dateEnd = $this->faker()->dateTimeBetween('+10 days', '+20 days');
 
         /** @var \Illuminate\Database\Eloquent\Model $booking */
         $booking = Booking::factory([
@@ -110,9 +135,12 @@ class AcceptanceTestsTest extends TestCase
 
         $url = self::API_ENDPOINT . "?dateStart={$dateStart->format(self::DATE_FORMAT)}&dateEnd={$dateEnd->format(self::DATE_FORMAT)}";
 
+        // when
         $response = $this->get($url);
 
+        // then
         $response->assertStatus(Response::HTTP_FORBIDDEN);
+        static::assertEquals($response->getContent(), json_encode($booking->toArray()));
     }
 
 }
