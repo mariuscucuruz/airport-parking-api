@@ -8,7 +8,7 @@ class BookRequest extends FormRequest
 {
     public function rules(): array
     {
-        return [s
+        return [
             'dateStart' => [
                 'bail',
                 'required',
@@ -26,6 +26,13 @@ class BookRequest extends FormRequest
                 'required',
                 'email:rfc,dns'
             ],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'required' => 'We need your email and the dates you want to book for.',
         ];
     }
 }
