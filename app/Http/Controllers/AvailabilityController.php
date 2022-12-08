@@ -11,16 +11,6 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 class AvailabilityController extends Controller
 {
     /**
-     * Display a listing of the resource.
-     *
-     * @return \Symfony\Component\HttpFoundation\JsonResponse
-     */
-    public function index(): JsonResponse
-    {
-        return response()->json(['ok']);
-    }
-
-    /**
      * Display the specified resource.
      *
      * @param \App\Http\Requests\AvailabilityRequest $request

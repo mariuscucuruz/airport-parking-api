@@ -16,9 +16,8 @@ use Illuminate\Support\Facades\Route;
 */
 
 // maximum of 10 requests per minute seems reasonable
-Route::prefix('check-availability')->middleware('throttle:10')->group(function () {
+Route::prefix('check-availability')->middleware(['api', 'throttle:10'])->group(function () {
     Route::get('/', [AvailabilityController::class, 'check']);
-    Route::get('/', [AvailabilityController::class, 'index']);
     Route::post('/', [AvailabilityController::class, 'book']);
     Route::put('/{booking}', [AvailabilityController::class, 'update']);
     Route::delete('/{booking}', [AvailabilityController::class, 'delete']);
