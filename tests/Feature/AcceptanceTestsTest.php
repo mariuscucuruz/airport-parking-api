@@ -40,12 +40,12 @@ class AcceptanceTestsTest extends TestCase
         // given
 
         // when
-        $response = $this->get(self::API_ENDPOINT);
+        $request = $this->get(self::API_ENDPOINT);
 
         // then
-        $response->assertStatus(Response::HTTP_FOUND);
-        static::assertNotEquals(Response::HTTP_NOT_FOUND, $response->getStatusCode());
-        //$response->assertSee('ok');
+        $request->assertStatus(Response::HTTP_FOUND);
+        static::assertNotEquals(Response::HTTP_NOT_FOUND, $request->getStatusCode());
+        //$request->assertSee('ok');
     }
 
     public function test_api_rejects_patch_requests()
@@ -53,10 +53,10 @@ class AcceptanceTestsTest extends TestCase
         // given
 
         // when
-        $response = $this->patch(self::API_ENDPOINT);
+        $request = $this->patch(self::API_ENDPOINT);
 
         // then
-        $response->assertStatus(Response::HTTP_METHOD_NOT_ALLOWED);
+        $request->assertStatus(Response::HTTP_METHOD_NOT_ALLOWED);
     }
 
     public function test_reject_requests_without_start_date()
@@ -66,11 +66,11 @@ class AcceptanceTestsTest extends TestCase
         $url = self::API_ENDPOINT . "/?dateEnd={$dateEnd->format(self::DATE_FORMAT)}";
 
         // when
-        $response = $this->getJson($url);
+        $request = $this->getJson($url);
 
         // then
-        $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
-        $response->assertSee('date start field is required');
+        $request->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
+        $request->assertSee('date start field is required');
     }
 
     public function test_reject_requests_without_end_date()
@@ -80,11 +80,11 @@ class AcceptanceTestsTest extends TestCase
         $url = self::API_ENDPOINT . "?dateStart={$dateStart->format(self::DATE_FORMAT)}";
 
         // when
-        $response = $this->getJson($url);
+        $request = $this->getJson($url);
 
         // then
-        $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
-        $response->assertSee('date end field is required');
+        $request->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
+        $request->assertSee('date end field is required');
     }
 
     public function test_reject_dates_in_the_past()
@@ -95,11 +95,11 @@ class AcceptanceTestsTest extends TestCase
         $url = self::API_ENDPOINT . "?dateStart={$dateStart->format(self::DATE_FORMAT)}&dateEnd={$dateEnd->format(self::DATE_FORMAT)}";
 
         // when
-        $response = $this->getJson($url);
+        $request = $this->getJson($url);
 
         // then
-        $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
-        $response->assertSee('Dates must be in the future');
+        $request->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
+        $request->assertSee('Dates must be in the future');
     }
 
     public function test_handles_correct_requests()
@@ -110,12 +110,13 @@ class AcceptanceTestsTest extends TestCase
         $url = self::API_ENDPOINT . "?dateStart={$dateStart->format(self::DATE_FORMAT)}&dateEnd={$dateEnd->format(self::DATE_FORMAT)}";
 
         // when
-        $response = $this->postJson($url, [
+        $request = $this->postJson($url, [
             'email' => $this->faker()->safeEmail()
         ]);
+        $response = json_decode($request->getContent(), true);
 
         // then
-        $response->assertStatus(Response::HTTP_OK);
+        $request->assertStatus(Response::HTTP_OK);
         static::assertEquals($response['dateStart'], $dateStart->format(self::DATE_FORMAT));
         static::assertEquals($response['dateEnd'], $dateEnd->format(self::DATE_FORMAT));
     }
@@ -136,11 +137,13 @@ class AcceptanceTestsTest extends TestCase
 //        $url = self::API_ENDPOINT . "?dateStart={$dateStart->format(self::DATE_FORMAT)}&dateEnd={$dateEnd->format(self::DATE_FORMAT)}";
 //
 //        // when
-//        $response = $this->getJson($url);
+//        $request = $this->getJson($url);
+//        $response = json_decode($request->getContent(), true);
 //
 //        // then
-//        $response->assertStatus(Response::HTTP_FORBIDDEN);
-//        static::assertEquals($response->getContent(), json_encode($booking->toArray()));
+//        $request->assertStatus(Response::HTTP_FORBIDDEN);
+//        static::assertEquals($response['dateStart'], $dateStart->format(self::DATE_FORMAT));
+//        static::assertEquals($response['dateEnd'], $dateEnd->format(self::DATE_FORMAT));
+//        static::assertEquals($request->getContent(), json_encode($booking->toArray()));
 //    }
-
 }
