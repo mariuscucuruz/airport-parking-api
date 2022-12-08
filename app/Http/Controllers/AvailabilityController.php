@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\AvailabilityRequest;
 use App\Http\Requests\BookRequest;
 use App\Models\Booking;
-use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 class AvailabilityController extends Controller
@@ -18,7 +17,7 @@ class AvailabilityController extends Controller
      */
     public function check(AvailabilityRequest $request): JsonResponse
     {
-        return response()->json(['success' => true, 'req' => $request->all()]);
+        return response()->json(['success' => $request->validated(), 'req' => $request->all()]);
     }
 
     /**
@@ -29,7 +28,8 @@ class AvailabilityController extends Controller
      */
     public function book(BookRequest $request): JsonResponse
     {
-        return response()->json(['success' => true]);
+        // just assume the details have been saved for now
+        return response()->json($request->validated());
     }
 
     /**
@@ -41,17 +41,20 @@ class AvailabilityController extends Controller
      */
     public function update(BookRequest $request, Booking $booking): JsonResponse
     {
-        return response()->json(['success' => true]);
+        return response()->json([
+            $request->validated(),
+            $booking->toArray()
+        ]);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Booking  $booking
-     * @return \Illuminate\Http\Response
+     * @param \App\Http\Requests\BookRequest $booking
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
     public function delete(BookRequest $booking): JsonResponse
     {
-        return response()->json(['success' => true]);
+        return response()->json(['success' => $booking->exists()]);
     }
 }
