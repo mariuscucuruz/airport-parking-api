@@ -26,6 +26,11 @@ class BookRequest extends FormRequest
                 'required',
                 'email'
             ],
+            'id' => [
+                'sometimes',
+                'int',
+                'exists:bookings,id'
+            ],
         ];
     }
 
