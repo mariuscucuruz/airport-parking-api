@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\AvailabilityRequest;
+use App\Http\Requests\BookRequest;
 use App\Models\Booking;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -11,7 +13,7 @@ class AvailabilityController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
     public function index(): JsonResponse
     {
@@ -21,10 +23,10 @@ class AvailabilityController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Booking  $booking
-     * @return \Illuminate\Http\Response
+     * @param \App\Http\Requests\AvailabilityRequest $request
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
-    public function check(Request $request): JsonResponse
+    public function check(AvailabilityRequest $request): JsonResponse
     {
         return response()->json(['success' => true, 'req' => $request->all()]);
     }
@@ -32,10 +34,10 @@ class AvailabilityController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param \App\Http\Requests\BookRequest $request
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
-    public function book(Request $request): JsonResponse
+    public function book(BookRequest $request): JsonResponse
     {
         return response()->json(['success' => true]);
     }
@@ -43,11 +45,11 @@ class AvailabilityController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Booking  $booking
-     * @return \Illuminate\Http\Response
+     * @param \App\Http\Requests\BookRequest $request
+     * @param \App\Models\Booking            $booking
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
-    public function update(Request $request, Booking $booking): JsonResponse
+    public function update(BookRequest $request, Booking $booking): JsonResponse
     {
         return response()->json(['success' => true]);
     }
@@ -58,7 +60,7 @@ class AvailabilityController extends Controller
      * @param  \App\Models\Booking  $booking
      * @return \Illuminate\Http\Response
      */
-    public function delete(Booking $booking): JsonResponse
+    public function delete(BookRequest $booking): JsonResponse
     {
         return response()->json(['success' => true]);
     }
