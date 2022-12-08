@@ -13,7 +13,7 @@ class BookRequest extends FormRequest
                 'bail',
                 'required',
                 'date_format:Y-m-d',
-                'after_or_equals:tomorrow'
+                'after:tomorrow'
             ],
             'dateEnd' => [
                 'bail',
@@ -24,7 +24,7 @@ class BookRequest extends FormRequest
             'email' => [
                 'bail',
                 'required',
-                'email:rfc,dns'
+                'email'
             ],
         ];
     }
@@ -33,6 +33,7 @@ class BookRequest extends FormRequest
     {
         return [
             'required' => 'We need your email and the dates you want to book for.',
+            'email' => 'Invalid email :input provided.',
         ];
     }
 }

@@ -76,8 +76,8 @@ class AcceptanceTestsTest extends TestCase
     public function test_reject_requests_without_end_date()
     {
         // given
-        $dateStart = $this->faker()->dateTime('+2 days');
-        $url = self::API_ENDPOINT . "?dateStart={$dateStart->format(self::DATE_FORMAT)}";
+        $dateStart  = $this->faker()->dateTime('+2 days');
+        $url        = self::API_ENDPOINT . "?dateStart={$dateStart->format(self::DATE_FORMAT)}";
 
         // when
         $request = $this->getJson($url);
@@ -90,9 +90,9 @@ class AcceptanceTestsTest extends TestCase
     public function test_reject_dates_in_the_past()
     {
         // given
-        $dateStart = $this->faker()->dateTimeBetween('-20days', '-10 days');
-        $dateEnd = $this->faker()->dateTimeBetween('-5days', '+0 days');
-        $url = self::API_ENDPOINT . "?dateStart={$dateStart->format(self::DATE_FORMAT)}&dateEnd={$dateEnd->format(self::DATE_FORMAT)}";
+        $dateStart  = $this->faker()->dateTimeBetween('-20days', '-10 days');
+        $dateEnd    = $this->faker()->dateTimeBetween('-5days', '+0 days');
+        $url        = self::API_ENDPOINT . "?dateStart={$dateStart->format(self::DATE_FORMAT)}&dateEnd={$dateEnd->format(self::DATE_FORMAT)}";
 
         // when
         $request = $this->getJson($url);
@@ -106,19 +106,25 @@ class AcceptanceTestsTest extends TestCase
     {
         // given
         $dateStart = $this->faker()->dateTimeBetween('+5 days', '+10 days');
-        $dateEnd = $this->faker()->dateTimeBetween('+10 days', '+20 days');
-        $url = self::API_ENDPOINT . "?dateStart={$dateStart->format(self::DATE_FORMAT)}&dateEnd={$dateEnd->format(self::DATE_FORMAT)}";
+        $dateEnd   = $this->faker()->dateTimeBetween('+10 days', '+20 days');
+        $email     = $this->faker()->safeEmail();
+
+        $requestUrl     = self::API_ENDPOINT;
+        $requestPayload = [
+            'dateStart'   => $dateStart->format(self::DATE_FORMAT),
+            'dateEnd'     => $dateEnd->format(self::DATE_FORMAT),
+            'email'       => $email
+        ];
 
         // when
-        $request = $this->postJson($url, [
-            'email' => $this->faker()->safeEmail()
-        ]);
+        $request  = $this->postJson($requestUrl, $requestPayload);
         $response = json_decode($request->getContent(), true);
 
         // then
         $request->assertStatus(Response::HTTP_OK);
         static::assertEquals($response['dateStart'], $dateStart->format(self::DATE_FORMAT));
         static::assertEquals($response['dateEnd'], $dateEnd->format(self::DATE_FORMAT));
+        static::assertEquals($response['email'], $email);
     }
 
 //    public function test_correctly_identify_booked_slots()
@@ -144,6 +150,5 @@ class AcceptanceTestsTest extends TestCase
 //        $request->assertStatus(Response::HTTP_FORBIDDEN);
 //        static::assertEquals($response['dateStart'], $dateStart->format(self::DATE_FORMAT));
 //        static::assertEquals($response['dateEnd'], $dateEnd->format(self::DATE_FORMAT));
-//        static::assertEquals($request->getContent(), json_encode($booking->toArray()));
 //    }
 }

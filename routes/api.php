@@ -2,7 +2,8 @@
 
 use App\Http\Controllers\AvailabilityController;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
+    use Illuminate\Support\Facades\App;
+    use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,6 +22,10 @@ Route::prefix('check-availability')->middleware(['api', 'throttle:10'])->group(f
     Route::post('/', [AvailabilityController::class, 'book']);
     Route::put('/{booking}', [AvailabilityController::class, 'update']);
     Route::delete('/{booking}', [AvailabilityController::class, 'delete']);
+});
+
+Route::get('/', function () {
+    return App::version();
 });
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
