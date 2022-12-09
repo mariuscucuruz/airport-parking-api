@@ -6,7 +6,6 @@ use App\Http\Requests\AvailabilityRequest;
 use App\Http\Requests\BookRequest;
 use App\Models\Booking;
 use App\Services\AvailabilityService;
-use Spatie\FlareClient\Http\Exceptions\NotFound;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -33,7 +32,6 @@ class AvailabilityController extends Controller
 
     public function book(BookRequest $request): JsonResponse
     {
-        /** @var Booking $booking */
         $booking = $this->service->reserveDates($request->validated());
 
         return $this->toJsonResponse($booking->toArray());
@@ -41,7 +39,6 @@ class AvailabilityController extends Controller
 
     public function update(BookRequest $request, Booking $booking): JsonResponse
     {
-        /** @var Booking $result */
         $result = $this->service->changeReservation($booking, $request->validated());
 
         return $this->toJsonResponse($result->toArray());
@@ -53,8 +50,7 @@ class AvailabilityController extends Controller
     public function delete(BookRequest $booking): JsonResponse
     {
         try {
-            $book = Booking::where($booking->validated())->firstOrFail();
-            $this->service->($book);
+            $this->service->changeReservation($booking);
         } catch (\Exception $exception) {
             return $this->toJsonResponse([
                 'error' => $exception->getMessage()
