@@ -15,6 +15,11 @@ class AvailabilityService
         return (self::MAX_DAILY_SPACES >= $this->findBookings($payload)->count());
     }
 
+    /**
+     * @param array $payload
+     * @return \App\Models\Booking
+     * @throws \Exception
+     */
     public function reserveDates(array $payload): Booking
     {
         if (!$this->isAvailable($payload)) {
@@ -26,7 +31,7 @@ class AvailabilityService
 
     public function changeReservation(Booking $booking, array $payload): Booking
     {
-        if ($this->findBookings($booking->toArray())) {
+        if ($this->findBookings($booking->toArray())->count() === 1) {
             $booking->update($payload);
 
             return $booking->save();

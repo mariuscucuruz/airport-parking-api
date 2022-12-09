@@ -18,6 +18,7 @@ class BookingFactory extends Factory
             'date_start' => fake()->dateTimeBetween('+1 day', '+1 year')->format('Y-m-d'),
             'date_end'   => fake()->dateTimeBetween('+1 day', '+1 year')->format('Y-m-d'),
             'email'      => fake()->safeEmail(),
+            'price'      => (fake()->numberBetween(10, 20) * Booking::CURRENCY_MULTIPLIER)
         ];
     }
 }

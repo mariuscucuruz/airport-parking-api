@@ -19,6 +19,7 @@ return new class extends Migration
             $table->date('date_start');
             $table->date('date_end');
             $table->string('email');
+            $table->integer('price');
             $table->timestamps();
         });
     }

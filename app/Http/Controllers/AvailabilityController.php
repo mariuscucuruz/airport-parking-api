@@ -44,13 +44,10 @@ class AvailabilityController extends Controller
         return $this->toJsonResponse($result->toArray());
     }
 
-    /**
-     * @throws \Spatie\FlareClient\Http\Exceptions\NotFound
-     */
     public function delete(BookRequest $booking): JsonResponse
     {
         try {
-            $this->service->changeReservation($booking);
+            return $this->service->changeReservation($booking);
         } catch (\Exception $exception) {
             return $this->toJsonResponse([
                 'error' => $exception->getMessage()
