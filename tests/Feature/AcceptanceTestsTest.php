@@ -20,12 +20,8 @@ namespace Tests\Feature;
  */
 
 use App\Models\Booking;
-use BadMethodCallException;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
-use InvalidArgumentException;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Exception\MethodNotAllowedException;
 use Tests\TestCase;
 
 class AcceptanceTestsTest extends TestCase
@@ -127,28 +123,28 @@ class AcceptanceTestsTest extends TestCase
         static::assertEquals($response['email'], $email);
     }
 
-//    public function test_correctly_identify_booked_slots()
-//    {
-//        // given
-//        $dateStart = $this->faker()->dateTimeBetween('+5 days', '+10 days');
-//        $dateEnd = $this->faker()->dateTimeBetween('+10 days', '+20 days');
-//
-//        /** @var \Illuminate\Database\Eloquent\Model $booking */
-//        $booking = Booking::factory([
-//            'booked' => true,
-//            'dateStart' => $dateStart->format(self::DATE_FORMAT),
-//            'dateEnd' => $dateEnd->format(self::DATE_FORMAT),
-//        ]);
-//
-//        $url = self::API_ENDPOINT . "?dateStart={$dateStart->format(self::DATE_FORMAT)}&dateEnd={$dateEnd->format(self::DATE_FORMAT)}";
-//
-//        // when
-//        $request = $this->getJson($url);
-//        $response = json_decode($request->getContent(), true);
-//
-//        // then
-//        $request->assertStatus(Response::HTTP_FORBIDDEN);
-//        static::assertEquals($response['dateStart'], $dateStart->format(self::DATE_FORMAT));
-//        static::assertEquals($response['dateEnd'], $dateEnd->format(self::DATE_FORMAT));
-//    }
+    public function test_correctly_identify_booked_slots()
+    {
+        // given
+        $dateStart = $this->faker()->dateTimeBetween('+5 days', '+10 days');
+        $dateEnd = $this->faker()->dateTimeBetween('+10 days', '+20 days');
+
+        /** @var \Illuminate\Database\Eloquent\Model $booking */
+        $booking = Booking::factory([
+            'email'     => $this->faker->safeEmail(),
+            'dateStart' => $dateStart->format(self::DATE_FORMAT),
+            'dateEnd'   => $dateEnd->format(self::DATE_FORMAT),
+        ]);
+
+        $url = self::API_ENDPOINT . "?dateStart={$dateStart->format(self::DATE_FORMAT)}&dateEnd={$dateEnd->format(self::DATE_FORMAT)}";
+
+        // when
+        $request = $this->getJson($url);
+        $response = json_decode($request->getContent(), true);
+
+        // then
+        $request->assertStatus(Response::HTTP_FORBIDDEN);
+        static::assertEquals($response['dateStart'], $dateStart->format(self::DATE_FORMAT));
+        static::assertEquals($response['dateEnd'], $dateEnd->format(self::DATE_FORMAT));
+    }
 }
