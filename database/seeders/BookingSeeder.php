@@ -6,12 +6,17 @@ use App\Models\Booking;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
-class DatabaseSeeder extends Seeder
+class BookingSeeder extends Seeder
 {
     use WithoutModelEvents;
 
+    /**
+     * Run the database seeds.
+     *
+     * @return void
+     */
     public function run()
     {
-        Booking::factory(10)->create();
+        Booking::factory()->count(10)->create();
     }
 }
