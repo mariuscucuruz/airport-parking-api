@@ -5,56 +5,78 @@ namespace App\Http\Controllers;
 use App\Http\Requests\AvailabilityRequest;
 use App\Http\Requests\BookRequest;
 use App\Models\Booking;
+use App\Services\AvailabilityService;
+use Spatie\FlareClient\Http\Exceptions\NotFound;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 class AvailabilityController extends Controller
 {
     /**
-     * Display the specified resource.
-     *
-     * @param \App\Http\Requests\AvailabilityRequest $request
-     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     * @var \App\Services\AvailabilityService
      */
+    private AvailabilityService $service;
+
+    public function __construct(AvailabilityService $service)
+    {
+        $this->service = $service;
+    }
+
     public function check(AvailabilityRequest $request): JsonResponse
     {
-        return response()->json(['success' => $request->validated(), 'req' => $request->all()]);
+        $response = [
+            'status' => $this->service->isAvailable($request->validated())
+        ];
+
+        return $this->toJsonResponse($response);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param \App\Http\Requests\BookRequest $request
-     * @return \Symfony\Component\HttpFoundation\JsonResponse
-     */
     public function book(BookRequest $request): JsonResponse
     {
-        // just assume the details have been saved for now
-        return response()->json($request->validated());
+        /** @var Booking $booking */
+        $booking = $this->service->reserveDates($request->validated());
+
+        return $this->toJsonResponse($booking->toArray());
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param \App\Http\Requests\BookRequest $request
-     * @param \App\Models\Booking            $booking
-     * @return \Symfony\Component\HttpFoundation\JsonResponse
-     */
     public function update(BookRequest $request, Booking $booking): JsonResponse
     {
-        return response()->json([
-            $request->validated(),
-            $booking->toArray()
-        ]);
+        /** @var Booking $result */
+        $result = $this->service->changeReservation($booking, $request->validated());
+
+        return $this->toJsonResponse($result->toArray());
     }
 
     /**
-     * Remove the specified resource from storage.
-     *
-     * @param \App\Http\Requests\BookRequest $booking
-     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     * @throws \Spatie\FlareClient\Http\Exceptions\NotFound
      */
     public function delete(BookRequest $booking): JsonResponse
     {
-        return response()->json(['success' => $booking->exists()]);
+        try {
+            $book = Booking::where($booking->validated())->firstOrFail();
+            $this->service->($book);
+        } catch (\Exception $exception) {
+            return $this->toJsonResponse([
+                'error' => $exception->getMessage()
+            ]);
+        }
+    }
+
+    /**
+     * Little transformer helper to enforce same response structure.
+     * In a real world scenario one would use something like thephpleague/fractal.
+     *
+     * @param array $payload
+     * @param int   $code
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     */
+    protected function toJsonResponse(array $payload = [], int $code = Response::HTTP_OK): JsonResponse
+    {
+        if (!$payload) {
+            $code = Response::HTTP_NO_CONTENT;
+            $payload = null;
+        }
+
+        return response()->json($payload, $code);
     }
 }
