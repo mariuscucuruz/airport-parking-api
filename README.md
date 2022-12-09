@@ -24,11 +24,13 @@ Create a simple API, that allows you to make a booking for given dates, manage c
 - API should show how many spaces for given date is available (per day)
 
 - Parking date From - date when car is being dropped off at the car park
-Parking date To - date time when car will be picked from the car park
-Example Actions
+- Parking date To - date time when car will be picked from the car park
 
+**Example Actions**
+```
 Add Reservation
 Cancel Reservation
 Get Availability
 from:
 to:
+```
